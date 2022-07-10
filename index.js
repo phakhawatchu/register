@@ -24,13 +24,33 @@ else {
 console.log(window.web3.currentProvider);
 
 // contractAddress and abi are setted after contract deploy
-var contractAddress = "0x3D1913b4de5704a94944cD4575a708C42b91d51e";
-var abi = JSON.parse(
-    '[{"constant":true,"inputs":[],"name":"getInfo","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_info","type":"string"}],"name":"setInfo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
-);
+var contractAddress = "0x91243A19645eb8a288F81212e53cF8f20960264A";
+var abi = [
+    {
+        constant: true,
+        inputs: [],
+        name: "totalSupply",
+        outputs: [{ name: "", type: "uint256" }],
+        payable: false,
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        constant: false,
+        inputs: [{ name: "tokenOwner", type: "address" }],
+        name: "balanceOf",
+        outputs: [{ name: "", type: "uint256" }],
+        payable: false,
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+];
 
 //contract instance
 contract = new web3.eth.Contract(abi, contractAddress);
+
+// getTotalSupply();
+// getBalanceOf();
 
 // Accounts
 var account;
@@ -50,23 +70,23 @@ web3.eth.getAccounts(function (err, accounts) {
 });
 
 //Smart contract functions
-function registerSetInfo() {
-    info = $("#newInfo").val();
+function getBalanceOf() {
+    address = $("#newAddress").val();
     contract.methods
-        .setInfo(info)
-        .send({ from: account })
+        .balanceOf(address)
+        .call()
+        // .send({ from: account })
         .then(function (tx) {
             console.log("Transaction: ", tx);
         });
-    $("#newInfo").val("");
 }
 
-function registerGetInfo() {
+function getTotalSupply() {
     contract.methods
-        .getInfo()
+        .totalSupply()
         .call()
-        .then(function (info) {
-            console.log("info: ", info);
-            document.getElementById("lastInfo").innerHTML = info;
+        .then(function (supply) {
+            console.log("Total Supply: ", supply);
+            document.getElementById("lastInfo").innerHTML = supply;
         });
 }
